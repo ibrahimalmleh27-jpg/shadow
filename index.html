@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>🔥 Upload Center</title>
+
+<style>
+body {
+  background:#0d0d0d;
+  color:#fff;
+  font-family:Arial;
+  text-align:center;
+}
+
+input, button {
+  padding:10px;
+  margin:10px;
+  border-radius:5px;
+  border:none;
+}
+
+button {
+  background:#00c853;
+  color:#fff;
+  cursor:pointer;
+}
+
+.card {
+  background:#1a1a1a;
+  margin:10px;
+  padding:10px;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>📤 رفع ملفات</h2>
+
+<!-- 🔥 API -->
+<h3>🔗 API</h3>
+<div>
+  <input id="apiLink" value="/api/upload" readonly>
+  <button onclick="copyApi()">📋 نسخ API</button>
+</div>
+
+<!-- 📤 رفع -->
+<input type="file" id="file">
+<br>
+<button onclick="upload()">رفع</button>
+
+<h3>📂 الملفات</h3>
+<div id="files"></div>
+
+<script>
+
+// رفع
+async function upload() {
+  let file = document.getElementById('file').files[0]
+  if (!file) return alert("اختار ملف")
+
+  let form = new FormData()
+  form.append("file", file)
+
+  let r = await fetch('/api/upload', {
+    method: 'POST',
+    body: form
+  })
+
+  let d = await r.json()
+
+  if (d.status) {
+    alert("تم الرفع 🔥\n" + d.url)
+    loadFiles()
+  }
+}
+
+// عرض الملفات
+async function loadFiles() {
+  let r = await fetch('/api/files')
+  let d = await r.json()
+
+  document.getElementById('files').innerHTML =
+    d.files.map(f => `
+      <div class="card">
+        <p>${f}</p>
+        <a href="/${f}" target="_blank">فتح</a>
+        <br>
+        <button onclick="copy('${f}')">📋 نسخ الرابط</button>
+        <button onclick="del('${f}')">🗑️ حذف</button>
+      </div>
+    `).join('')
+}
+
+// نسخ رابط ملف
+function copy(file){
+  navigator.clipboard.writeText(location.origin + "/" + file)
+  alert("تم النسخ 🔥")
+}
+
+// 🔗 نسخ API
+function copyApi(){
+  let full = location.origin + "/api/upload"
+  navigator.clipboard.writeText(full)
+  alert("تم نسخ API 🔥")
+}
+
+// حذف
+async function del(file){
+  await fetch('/api/delete?file=' + file)
+  loadFiles()
+}
+
+loadFiles()
+
+</script>
+
+</body>
+</html>

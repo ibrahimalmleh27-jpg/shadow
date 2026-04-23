@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>shadow-garden</title>
+
+<style>
+body {
+  margin:0;
+  font-family:sans-serif;
+  background: linear-gradient(135deg,#0f172a,#1e3a8a);
+  color:white;
+  text-align:center;
+}
+
+.container {
+  margin-top:80px;
+}
+
+h1 {
+  letter-spacing:2px;
+  margin-bottom:10px;
+}
+
+input, button {
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+}
+
+button {
+  background:#2563eb;
+  color:white;
+  cursor:pointer;
+}
+
+.api-box {
+  margin-top:30px;
+  background:#111827;
+  display:inline-block;
+  padding:15px;
+  border-radius:10px;
+}
+
+.copy-btn {
+  background:green;
+  margin-top:10px;
+}
+
+a {
+  color:#00ffcc;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>🌑 shadow-garden</h1>
+
+  <h3>📤 رفع ملفات</h3>
+
+  <input type="file" id="file">
+  <br>
+
+  <button onclick="upload()">رفع الملف</button>
+
+  <p id="result"></p>
+
+  <!-- 🔥 API -->
+  <div class="api-box">
+
+    <h3>🔑 API Developers</h3>
+
+    <p id="apiText">http://your-site.com/api/upload</p>
+
+    <button class="copy-btn" onclick="copyAPI()">
+      📋 نسخ API
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+/* رفع ملف */
+async function upload() {
+  const file = document.getElementById("file").files[0];
+
+  const form = new FormData();
+  form.append("file", file);
+
+  const res = await fetch("http://your-site.com/api/upload", {
+    method:"POST",
+    body:form
+  });
+
+  const data = await res.json();
+
+  document.getElementById("result").innerHTML =
+    `🔗 <a href="${data.url}" target="_blank">فتح الملف</a>`;
+}
+
+/* نسخ API */
+function copyAPI() {
+  navigator.clipboard.writeText("http://your-site.com/api/upload");
+  alert("تم نسخ API 🔥");
+}
+
+</script>
+
+</body>
+</html>

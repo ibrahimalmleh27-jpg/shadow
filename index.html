@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>مركز التحميل</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  color: #fff;
+  text-align: center;
+}
+
+.container {
+  margin-top: 80px;
+}
+
+.logo {
+  width: 120px;
+  border-radius: 50%;
+  box-shadow: 0 0 25px rgba(0, 150, 255, 0.7);
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin-bottom: 30px;
+}
+
+input {
+  padding: 12px;
+  width: 220px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  margin-bottom: 15px;
+}
+
+button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+#result {
+  margin-top: 20px;
+}
+
+.download-btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px 25px;
+  background: green;
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+}
+
+img.preview {
+  margin-top: 15px;
+  width: 200px;
+  border-radius: 15px;
+  box-shadow: 0 0 15px #000;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+  <!-- 🖼️ صورة الوجه -->
+  <img src="/logo.png" class="logo">
+
+  <h1>🔐 ادخل الباسورد</h1>
+
+  <input type="password" id="pass" placeholder="الباسورد">
+  <br>
+  <button onclick="check()">دخول</button>
+
+  <div id="result"></div>
+
+</div>
+
+<script>
+async function check() {
+  const id = window.location.pathname.split("/").pop();
+  const password = document.getElementById("pass").value;
+
+  const res = await fetch("/check/" + id, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password })
+  });
+
+  const data = await res.json();
+
+  if (data.error) {
+    alert("❌ باسورد غلط");
+  } else {
+    document.getElementById("result").innerHTML = `
+      ${data.image ? `<img src="${data.image}" class="preview"><br>` : ""}
+      <a href="${data.download}" class="download-btn">📥 تحميل الملف</a>
+    `;
+  }
+}
+</script>
+
+</body>
+</html>

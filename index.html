@@ -5,22 +5,21 @@
 <title>Shadow Upload</title>
 <style>
 body{background:#111;color:#fff;font-family:sans-serif;text-align:center;padding:20px}
-button{padding:10px 20px;margin:10px;background:#ff2e63;color:#fff;border:none}
+button{padding:10px;margin:10px;background:#ff2e63;color:#fff;border:none}
 .hidden{display:none}
 </style>
 </head>
 
 <body>
 
-<div id="login">
 <h2>دخول الموقع</h2>
 
-<label><input type="checkbox" id="r1"> موافق</label><br>
-<label><input type="checkbox" id="r2"> لا أرفع مخالف</label><br>
-<label><input type="checkbox" id="r3"> أستخدم بشكل صحيح</label><br>
+<input type="checkbox" id="r1"> موافق<br>
+<input type="checkbox" id="r2"> لا أرفع مخالف<br>
+<input type="checkbox" id="r3"> استخدام صحيح<br>
 
+<br>
 <button onclick="enter()">دخول</button>
-</div>
 
 <div id="panel" class="hidden">
 
@@ -50,7 +49,6 @@ if(!r1.checked || !r2.checked || !r3.checked){
 alert("وافق على الشروط")
 return
 }
-login.classList.add("hidden")
 panel.classList.remove("hidden")
 }
 
@@ -64,48 +62,24 @@ files.classList.remove("hidden")
 images.classList.add("hidden")
 }
 
-// 📸 رفع صور
 async function uploadImages(){
-
 let form = new FormData()
-let files = document.getElementById("imgInput").files
-
-for(let f of files){
+for(let f of imgInput.files){
 form.append("images", f)
 }
-
-let res = await fetch("http://localhost:3000/upload-images", {
-method:"POST",
-body: form
-})
-
+let res = await fetch("/api/images", { method:"POST", body: form })
 let data = await res.json()
-
-document.getElementById("apiResult").innerText =
-JSON.stringify(data, null, 2)
-
+apiResult.innerText = JSON.stringify(data, null, 2)
 }
 
-// 📂 رفع ملفات
 async function uploadFiles(){
-
 let form = new FormData()
-let files = document.getElementById("fileInput").files
-
-for(let f of files){
+for(let f of fileInput.files){
 form.append("files", f)
 }
-
-let res = await fetch("http://localhost:3000/upload-files", {
-method:"POST",
-body: form
-})
-
+let res = await fetch("/api/files", { method:"POST", body: form })
 let data = await res.json()
-
-document.getElementById("fileResult").innerText =
-JSON.stringify(data, null, 2)
-
+fileResult.innerText = JSON.stringify(data, null, 2)
 }
 
 </script>

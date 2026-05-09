@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage })
 
-// 📸 رفع صور → API
+// 📸 API الصور
 app.post("/api/images", upload.array("images", 100), (req, res) => {
   const files = req.files.map(f => ({
     url: `${req.protocol}://${req.get("host")}/uploads/${f.filename}`
@@ -22,12 +22,11 @@ app.post("/api/images", upload.array("images", 100), (req, res) => {
 
   res.json({
     status: true,
-    total: files.length,
     results: files
   })
 })
 
-// 📂 رفع ملفات → روابط
+// 📂 API الملفات
 app.post("/api/files", upload.array("files", 50), (req, res) => {
   const files = req.files.map(f => ({
     url: `${req.protocol}://${req.get("host")}/uploads/${f.filename}`
@@ -42,17 +41,16 @@ app.post("/api/files", upload.array("files", 50), (req, res) => {
 // 📡 عرض الملفات
 app.use("/uploads", express.static("uploads"))
 
-// 🌐 الموقع
+// 🔥 أهم جزء (حل المشكلة)
 app.use(express.static("public"))
 
-// 🔥 حل مشكلة "لا يمكن الحصول على /"
 app.get("/", (req, res) => {
-  res.sendFile(process.cwd() + "/public/index.html")
+  res.sendFile(path.resolve("public/index.html"))
 })
 
-// 🔥 مهم لـ Railway
+// 🔥 بورت Railway
 const PORT = process.env.PORT || 3000
 
 app.listen(PORT, () => {
-  console.log("🚀 Server running")
+  console.log("Server running")
 })

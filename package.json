@@ -1,23 +1,11 @@
 {
-  "name": "shadow-upload-system",
+  "name": "shadow-upload",
   "version": "1.0.0",
-  "description": "Upload images and files and convert them to API & links",
-  "main": "server.js",
   "type": "module",
+  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server.js"
   },
-  "keywords": [
-    "upload",
-    "api",
-    "images",
-    "files",
-    "nodejs",
-    "express"
-  ],
-  "author": "Shadow",
-  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",

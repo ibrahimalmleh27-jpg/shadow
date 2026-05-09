@@ -1,47 +1,60 @@
-const express = require("express");
-const multer = require("multer");
-const cors = require("cors");
-const fs = require("fs");
+import express from "express"
+import multer from "multer"
+import cors from "cors"
+import fs from "fs"
 
-const app = express();
+const app = express()
+app.use(cors())
+app.use(express.json())
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static("public"));
-
-if (!fs.existsSync("uploads")) {
-  fs.mkdirSync("uploads");
-}
-
-// 📦 إعداد رفع الملفات
+// 📂 تخزين الملفات
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, "uploads/")
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+    cb(null, Date.now() + "-" + file.originalname)
   }
-});
+})
 
-const upload = multer({ storage });
+const upload = multer({ storage })
 
-// 🚀 API رفع مفتوح
-app.post("/api/upload", upload.single("file"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded" });
-  }
+// 📸 رفع صور → API
+app.post("/upload-images", upload.array("images", 100), (req, res) => {
+
+  let files = req.files.map(f => ({
+    name: f.filename,
+    url: `http://localhost:3000/uploads/${f.filename}`
+  }))
 
   res.json({
-    success: true,
-    url: `/uploads/${req.file.filename}`
-  });
-});
+    status: true,
+    creator: "Shadow",
+    total: files.length,
+    results: files
+  })
 
-// 📂 عرض الملفات مباشرة
-app.use("/uploads", express.static("uploads"));
+})
 
-// 🌑 تشغيل السيرفر
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`shadow-garden running 🔥 http://localhost:${PORT}`);
-});
+// 📂 رفع ملفات → روابط
+app.post("/upload-files", upload.array("files", 50), (req, res) => {
+
+  let files = req.files.map(f => ({
+    name: f.filename,
+    url: `http://localhost:3000/uploads/${f.filename}`
+  }))
+
+  res.json({
+    status: true,
+    results: files
+  })
+
+})
+
+// 📡 عرض الملفات
+app.use("/uploads", express.static("uploads"))
+
+// تشغيل
+app.listen(3000, () => {
+  console.log("🚀 Server running on http://localhost:3000")
+})

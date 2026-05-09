@@ -3,41 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <title>Shadow Upload</title>
+
 <style>
-body{background:#111;color:#fff;font-family:sans-serif;text-align:center;padding:20px}
-button{padding:10px;margin:10px;background:#ff2e63;color:#fff;border:none}
+body{
+background:#0f0f0f;
+color:#fff;
+font-family:sans-serif;
+text-align:center;
+padding:20px;
+}
+
+.box{
+background:#1a1a1a;
+padding:20px;
+border-radius:15px;
+margin-top:20px;
+}
+
+button{
+padding:12px;
+margin:10px;
+border:none;
+border-radius:10px;
+background:#ff2e63;
+color:#fff;
+cursor:pointer;
+}
+
 .hidden{display:none}
+
+pre{
+background:#000;
+color:#0f0;
+padding:15px;
+border-radius:10px;
+text-align:left;
+overflow:auto;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<h2>دخول الموقع</h2>
+<h2>🚀 Shadow Upload</h2>
 
-<input type="checkbox" id="r1"> موافق<br>
+<!-- صفحة الدخول -->
+<div id="login" class="box">
+
+<h3>شروط الدخول</h3>
+
+<input type="checkbox" id="r1"> موافق على الشروط<br>
 <input type="checkbox" id="r2"> لا أرفع مخالف<br>
 <input type="checkbox" id="r3"> استخدام صحيح<br>
 
 <br>
 <button onclick="enter()">دخول</button>
 
-<div id="panel" class="hidden">
-
-<h2>لوحة التحكم</h2>
-
-<button onclick="showImages()">📸 صور API</button>
-<button onclick="showFiles()">📂 ملفات</button>
-
-<div id="images" class="hidden">
-<input type="file" id="imgInput" multiple>
-<button onclick="uploadImages()">رفع</button>
-<pre id="apiResult"></pre>
 </div>
 
-<div id="files" class="hidden">
+<!-- لوحة التحكم -->
+<div id="panel" class="hidden">
+
+<div class="box">
+
+<h3>لوحة التحكم</h3>
+
+<button onclick="showImages()">📸 صور → API</button>
+<button onclick="showFiles()">📂 ملفات → روابط</button>
+
+</div>
+
+<!-- صور -->
+<div id="images" class="box hidden">
+
+<h3>رفع صور (حد أقصى 100)</h3>
+
+<input type="file" id="imgInput" multiple accept="image/*">
+
+<button onclick="uploadImages()">رفع</button>
+
+<pre id="apiResult"></pre>
+
+</div>
+
+<!-- ملفات -->
+<div id="files" class="box hidden">
+
+<h3>رفع ملفات / فيديوهات</h3>
+
 <input type="file" id="fileInput" multiple>
+
 <button onclick="uploadFiles()">رفع</button>
+
 <pre id="fileResult"></pre>
+
 </div>
 
 </div>
@@ -49,6 +110,7 @@ if(!r1.checked || !r2.checked || !r3.checked){
 alert("وافق على الشروط")
 return
 }
+login.classList.add("hidden")
 panel.classList.remove("hidden")
 }
 
@@ -62,24 +124,50 @@ files.classList.remove("hidden")
 images.classList.add("hidden")
 }
 
+// 📸 رفع صور
 async function uploadImages(){
-let form = new FormData()
-for(let f of imgInput.files){
-form.append("images", f)
-}
-let res = await fetch("/api/images", { method:"POST", body: form })
-let data = await res.json()
-apiResult.innerText = JSON.stringify(data, null, 2)
+
+let files = imgInput.files
+if(files.length > 100){
+alert("الحد الأقصى 100 صورة")
+return
 }
 
-async function uploadFiles(){
 let form = new FormData()
+
+for(let f of files){
+form.append("images", f)
+}
+
+let res = await fetch("/api/images", {
+method:"POST",
+body: form
+})
+
+let data = await res.json()
+
+apiResult.innerText = JSON.stringify(data, null, 2)
+
+}
+
+// 📂 رفع ملفات
+async function uploadFiles(){
+
+let form = new FormData()
+
 for(let f of fileInput.files){
 form.append("files", f)
 }
-let res = await fetch("/api/files", { method:"POST", body: form })
+
+let res = await fetch("/api/files", {
+method:"POST",
+body: form
+})
+
 let data = await res.json()
+
 fileResult.innerText = JSON.stringify(data, null, 2)
+
 }
 
 </script>

@@ -6,7 +6,7 @@ import path from "path"
 const app = express()
 app.use(cors())
 
-// 📂 رفع الملفات
+// 📂 إعداد رفع الملفات
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname)
@@ -14,9 +14,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage })
 
-// 📸 API صور
+// 📸 API الصور
 app.post("/api/images", upload.array("images", 100), (req, res) => {
+
   const files = req.files.map(f => ({
+    name: f.filename,
     url: `${req.protocol}://${req.get("host")}/uploads/${f.filename}`
   }))
 
@@ -27,9 +29,11 @@ app.post("/api/images", upload.array("images", 100), (req, res) => {
   })
 })
 
-// 📂 API ملفات
+// 📂 API الملفات
 app.post("/api/files", upload.array("files", 50), (req, res) => {
+
   const files = req.files.map(f => ({
+    name: f.filename,
     url: `${req.protocol}://${req.get("host")}/uploads/${f.filename}`
   }))
 
@@ -39,12 +43,15 @@ app.post("/api/files", upload.array("files", 50), (req, res) => {
   })
 })
 
-// عرض الملفات
+// 📡 عرض الملفات
 app.use("/uploads", express.static("uploads"))
 
-// الموقع
+// 🌐 الموقع
 app.use(express.static("public"))
 
-app.listen(3000, () => {
-  console.log("🔥 Server running on http://localhost:3000")
+// 🔥 مهم لـ Railway
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () => {
+  console.log("🚀 Server running")
 })

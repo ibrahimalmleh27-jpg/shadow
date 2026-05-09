@@ -6,7 +6,7 @@ import path from "path"
 const app = express()
 app.use(cors())
 
-// 📂 إعداد رفع الملفات
+// 📂 رفع الملفات
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname)
@@ -14,11 +14,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage })
 
-// 📸 API الصور
+// 📸 رفع صور → API
 app.post("/api/images", upload.array("images", 100), (req, res) => {
-
   const files = req.files.map(f => ({
-    name: f.filename,
     url: `${req.protocol}://${req.get("host")}/uploads/${f.filename}`
   }))
 
@@ -29,11 +27,9 @@ app.post("/api/images", upload.array("images", 100), (req, res) => {
   })
 })
 
-// 📂 API الملفات
+// 📂 رفع ملفات → روابط
 app.post("/api/files", upload.array("files", 50), (req, res) => {
-
   const files = req.files.map(f => ({
-    name: f.filename,
     url: `${req.protocol}://${req.get("host")}/uploads/${f.filename}`
   }))
 
@@ -48,6 +44,11 @@ app.use("/uploads", express.static("uploads"))
 
 // 🌐 الموقع
 app.use(express.static("public"))
+
+// 🔥 حل مشكلة "لا يمكن الحصول على /"
+app.get("/", (req, res) => {
+  res.sendFile(process.cwd() + "/public/index.html")
+})
 
 // 🔥 مهم لـ Railway
 const PORT = process.env.PORT || 3000

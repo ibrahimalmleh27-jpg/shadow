@@ -1,114 +1,111 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>shadow-garden</title>
-
+<title>Shadow Upload</title>
 <style>
-body {
-  margin:0;
-  font-family:sans-serif;
-  background: linear-gradient(135deg,#0f172a,#1e3a8a);
-  color:white;
-  text-align:center;
-}
-
-.container {
-  margin-top:80px;
-}
-
-h1 {
-  letter-spacing:2px;
-  margin-bottom:10px;
-}
-
-input, button {
-  padding:10px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-}
-
-button {
-  background:#2563eb;
-  color:white;
-  cursor:pointer;
-}
-
-.api-box {
-  margin-top:30px;
-  background:#111827;
-  display:inline-block;
-  padding:15px;
-  border-radius:10px;
-}
-
-.copy-btn {
-  background:green;
-  margin-top:10px;
-}
-
-a {
-  color:#00ffcc;
-}
+body{background:#111;color:#fff;font-family:sans-serif;text-align:center;padding:20px}
+button{padding:10px 20px;margin:10px;background:#ff2e63;color:#fff;border:none}
+.hidden{display:none}
 </style>
-
 </head>
 
 <body>
 
-<div class="container">
+<div id="login">
+<h2>دخول الموقع</h2>
 
-  <h1>🌑 shadow-garden</h1>
+<label><input type="checkbox" id="r1"> موافق</label><br>
+<label><input type="checkbox" id="r2"> لا أرفع مخالف</label><br>
+<label><input type="checkbox" id="r3"> أستخدم بشكل صحيح</label><br>
 
-  <h3>📤 رفع ملفات</h3>
+<button onclick="enter()">دخول</button>
+</div>
 
-  <input type="file" id="file">
-  <br>
+<div id="panel" class="hidden">
 
-  <button onclick="upload()">رفع الملف</button>
+<h2>لوحة التحكم</h2>
 
-  <p id="result"></p>
+<button onclick="showImages()">📸 صور API</button>
+<button onclick="showFiles()">📂 ملفات</button>
 
-  <!-- 🔥 API -->
-  <div class="api-box">
+<div id="images" class="hidden">
+<input type="file" id="imgInput" multiple>
+<button onclick="uploadImages()">رفع</button>
+<pre id="apiResult"></pre>
+</div>
 
-    <h3>🔑 API Developers</h3>
-
-    <p id="apiText">http://your-site.com/api/upload</p>
-
-    <button class="copy-btn" onclick="copyAPI()">
-      📋 نسخ API
-    </button>
-
-  </div>
+<div id="files" class="hidden">
+<input type="file" id="fileInput" multiple>
+<button onclick="uploadFiles()">رفع</button>
+<pre id="fileResult"></pre>
+</div>
 
 </div>
 
 <script>
 
-/* رفع ملف */
-async function upload() {
-  const file = document.getElementById("file").files[0];
-
-  const form = new FormData();
-  form.append("file", file);
-
-  const res = await fetch("http://your-site.com/api/upload", {
-    method:"POST",
-    body:form
-  });
-
-  const data = await res.json();
-
-  document.getElementById("result").innerHTML =
-    `🔗 <a href="${data.url}" target="_blank">فتح الملف</a>`;
+function enter(){
+if(!r1.checked || !r2.checked || !r3.checked){
+alert("وافق على الشروط")
+return
+}
+login.classList.add("hidden")
+panel.classList.remove("hidden")
 }
 
-/* نسخ API */
-function copyAPI() {
-  navigator.clipboard.writeText("http://your-site.com/api/upload");
-  alert("تم نسخ API 🔥");
+function showImages(){
+images.classList.remove("hidden")
+files.classList.add("hidden")
+}
+
+function showFiles(){
+files.classList.remove("hidden")
+images.classList.add("hidden")
+}
+
+// 📸 رفع صور
+async function uploadImages(){
+
+let form = new FormData()
+let files = document.getElementById("imgInput").files
+
+for(let f of files){
+form.append("images", f)
+}
+
+let res = await fetch("http://localhost:3000/upload-images", {
+method:"POST",
+body: form
+})
+
+let data = await res.json()
+
+document.getElementById("apiResult").innerText =
+JSON.stringify(data, null, 2)
+
+}
+
+// 📂 رفع ملفات
+async function uploadFiles(){
+
+let form = new FormData()
+let files = document.getElementById("fileInput").files
+
+for(let f of files){
+form.append("files", f)
+}
+
+let res = await fetch("http://localhost:3000/upload-files", {
+method:"POST",
+body: form
+})
+
+let data = await res.json()
+
+document.getElementById("fileResult").innerText =
+JSON.stringify(data, null, 2)
+
 }
 
 </script>

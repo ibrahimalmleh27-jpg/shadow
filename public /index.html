@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>S7ADOW</title>
+
+<style>
+body{margin:0;background:#0f0f0f;color:#fff;font-family:sans-serif;text-align:center}
+.header{background:#1a1a1a;padding:15px;font-size:20px}
+
+/* الصفحات */
+.page{display:none;padding:20px}
+.active{display:block}
+
+/* النافبار */
+.nav{
+position:fixed;
+bottom:0;
+width:100%;
+background:#1a1a1a;
+display:flex;
+justify-content:space-around;
+padding:10px;
+}
+
+/* أزرار */
+button{
+background:#ff2e63;
+border:none;
+padding:10px;
+border-radius:10px;
+color:#fff;
+}
+
+/* الصور */
+img{width:100px;border-radius:10px;margin:5px}
+
+/* الصورة المصغرة */
+.avatar{
+width:120px;
+height:120px;
+border-radius:20px;
+margin-top:20px;
+}
+
+.version{
+background:#333;
+padding:5px 10px;
+border-radius:10px;
+display:inline-block;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">🚀 S7ADOW</div>
+
+<!-- 🏠 الرئيسية -->
+<div id="home" class="page active">
+<img src="/img/logo.jpg" class="avatar">
+<h2>S7ADOW</h2>
+<p class="version">v1.0.0</p>
+<p>🚀 موقع رفع الملفات</p>
+</div>
+
+<!-- ⬆️ رفع -->
+<div id="upload" class="page">
+<input type="file" id="file">
+<br><br>
+<button onclick="upload()">رفع</button>
+<pre id="result"></pre>
+</div>
+
+<!-- 📡 API -->
+<div id="api" class="page">
+<input id="apiLink" readonly>
+<br><br>
+<button onclick="copyApi()">📋 نسخ</button>
+</div>
+
+<!-- 🖼️ المعرض -->
+<div id="galleryPage" class="page">
+<div id="gallery"></div>
+</div>
+
+<!-- 🔘 النافبار -->
+<div class="nav">
+<button onclick="show('home')">🏠</button>
+<button onclick="show('upload')">⬆️</button>
+<button onclick="show('api')">📡</button>
+<button onclick="show('galleryPage')">🖼️</button>
+</div>
+
+<script>
+
+function show(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
+document.getElementById(id).classList.add("active")
+}
+
+async function upload(){
+let form = new FormData()
+form.append("file", file.files[0])
+
+let res = await fetch("/api/upload",{method:"POST",body:form})
+let data = await res.json()
+
+result.innerHTML = `
+🔗 ${data.url}
+<br>
+<button onclick="copy('${data.url}')">📋 نسخ الرابط</button>
+`
+
+loadGallery()
+}
+
+function copy(text){
+navigator.clipboard.writeText(text)
+alert("تم النسخ")
+}
+
+function copyApi(){
+copy(location.origin + "/api/gallery")
+}
+
+async function loadGallery(){
+let res = await fetch("/api/gallery")
+let data = await res.json()
+
+gallery.innerHTML = ""
+data.reverse().forEach(url=>{
+gallery.innerHTML += `
+<div>
+<img src="${url}">
+<br>
+<button onclick="copy('${url}')">نسخ</button>
+</div>
+`
+})
+}
+
+apiLink.value = location.origin + "/api/gallery"
+loadGallery()
+
+</script>
+
+</body>
+</html>
